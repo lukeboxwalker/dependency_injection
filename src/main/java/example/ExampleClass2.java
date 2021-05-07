@@ -10,4 +10,8 @@ public class ExampleClass2 {
     public ExampleClass2() {
         System.out.println("Created ExampleClass2");
     }
+
+    public void foo() {
+
+    }
 }
