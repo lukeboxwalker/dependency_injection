@@ -2,10 +2,11 @@ package example;
 
 import dependency_injection.AnnotationController;
 
-public final class Controller {
+public class Controller {
 
-    public static void main(final String... args) {
-        final AnnotationController annotationController = new AnnotationController();
-        annotationController.process(new Controller());
+    final AnnotationController annotationController = new AnnotationController();
+
+    public void run() {
+        annotationController.process(this);
     }
 }
