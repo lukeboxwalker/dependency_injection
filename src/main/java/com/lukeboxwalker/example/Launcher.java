@@ -6,5 +6,6 @@ public final class Launcher {
         System.out.println("Start...");
         final Controller controller = new Controller();
         controller.run();
+        System.out.println("End...");
     }
 }
