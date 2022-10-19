@@ -1,6 +1,6 @@
 package com.lukeboxwalker.processing;
 
-public interface ObjectFactory {
+public interface ComponentFactory {
 
     boolean contains(final String className);
 

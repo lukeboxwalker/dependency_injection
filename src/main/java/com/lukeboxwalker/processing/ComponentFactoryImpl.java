@@ -1,7 +1,7 @@
 package com.lukeboxwalker.processing;
 
-import com.lukeboxwalker.processing.annotation.Autowired;
-import com.lukeboxwalker.processing.annotation.Service;
+import com.lukeboxwalker.processing.annotation.AutowiredConstructor;
+import com.lukeboxwalker.processing.annotation.PluginComponent;
 import com.lukeboxwalker.processing.exception.DependencyLookUpException;
 import com.lukeboxwalker.processing.exception.ObjectCreationException;
 
@@ -14,16 +14,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-@Service
-final class ObjectFactoryImpl implements ObjectFactory {
+@PluginComponent
+final class ComponentFactoryImpl implements ComponentFactory {
 
     private static final String UNCHECKED = "unchecked";
 
     private final Map<Class<?>, Object> singletons = new HashMap<>();
 
-    /* default */ ObjectFactoryImpl() {
+    /* default */ ComponentFactoryImpl() {
         super();
-        addSuperAndInterfaces(ObjectFactoryImpl.class, this);
+        addSuperAndInterfaces(ComponentFactoryImpl.class, this);
     }
 
     public void provide(final Object object) {
@@ -65,8 +65,8 @@ final class ObjectFactoryImpl implements ObjectFactory {
 
     @SuppressWarnings(UNCHECKED)
     private <T> T get(final Class<?> original, final Class<T> component, final Set<Class<?>> dependencies) {
-        if (ObjectFactoryImpl.class.equals(component)) {
-            return (T) get(ObjectFactory.class);
+        if (ComponentFactoryImpl.class.equals(component)) {
+            return (T) get(ComponentFactory.class);
         }
         if (contains(component)) {
             return (T) singletons.get(component);
@@ -76,7 +76,7 @@ final class ObjectFactoryImpl implements ObjectFactory {
     }
 
     private <T> T create(final Class<?> original, final Class<T> component, final Set<Class<?>> dependencies) {
-        if (component.isAnnotationPresent(Service.class)) {
+        if (component.isAnnotationPresent(PluginComponent.class)) {
             return createObject(original, component, dependencies);
         } else {
             return createDependency(component);
@@ -87,7 +87,7 @@ final class ObjectFactoryImpl implements ObjectFactory {
     private <T> T createObject(final Class<?> original, final Class<T> component, final Set<Class<?>> dependencies) {
         dependencies.add(component);
         final Optional<Constructor<?>> autowiredConstructor = Arrays.stream(component.getDeclaredConstructors())
-                .filter(constructor -> constructor.isAnnotationPresent(Autowired.class))
+                .filter(constructor -> constructor.isAnnotationPresent(AutowiredConstructor.class))
                 .findFirst();
         Constructor<T> beanConstructor;
         try {

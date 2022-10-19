@@ -1,6 +1,6 @@
 package com.lukeboxwalker.processing;
 
-public interface AnnotationHandler {
+public interface ComponentAnnotationHandler {
 
     void handle(final Class<?> annotatedClass);
 }

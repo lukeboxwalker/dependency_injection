@@ -1,6 +1,6 @@
 package com.lukeboxwalker.processing;
 
-import com.lukeboxwalker.processing.annotation.Service;
+import com.lukeboxwalker.processing.annotation.PluginComponent;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 
@@ -25,12 +25,12 @@ public final class AnnotationController {
     private static final int PARSING_OPTIONS = 0;
     private static final String CLASS_EXTENSION = ".class";
 
-    private final ObjectFactoryImpl objectFactory = new ObjectFactoryImpl();
-    private final Map<Class<? extends Annotation>, AnnotationHandler> handlerMap = new HashMap<>();
+    private final ComponentFactoryImpl objectFactory = new ComponentFactoryImpl();
+    private final Map<Class<? extends Annotation>, ComponentAnnotationHandler> handlerMap = new HashMap<>();
 
     public AnnotationController() {
         super();
-        handlerMap.put(Service.class, new ServiceAnnotationHandler(objectFactory));
+        handlerMap.put(PluginComponent.class, new ServiceAnnotationHandler(objectFactory));
     }
 
     public void process(final Object root) {
@@ -42,7 +42,7 @@ public final class AnnotationController {
         }
     }
 
-    public ObjectFactory getObjectFactory() {
+    public ComponentFactory getComponentFactory() {
         return objectFactory;
     }
 
@@ -81,6 +81,7 @@ public final class AnnotationController {
             JarEntry entry = entries.nextElement();
             if (isClass(entry.getName())) {
                 try (InputStream inputStream = jarFile.getInputStream(entry)) {
+                    System.out.println(entry.getName());
                     new ClassReader(inputStream).accept(visitor, PARSING_OPTIONS);
                 }
             }

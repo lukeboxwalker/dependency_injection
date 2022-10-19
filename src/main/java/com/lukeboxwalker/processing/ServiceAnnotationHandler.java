@@ -1,10 +1,10 @@
 package com.lukeboxwalker.processing;
 
-public class ServiceAnnotationHandler implements AnnotationHandler {
+public class ServiceAnnotationHandler implements ComponentAnnotationHandler {
 
-    private final ObjectFactory objectFactory;
+    private final ComponentFactory objectFactory;
 
-    public ServiceAnnotationHandler(final ObjectFactory objectFactory) {
+    public ServiceAnnotationHandler(final ComponentFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
 

@@ -10,11 +10,11 @@ import java.util.Map;
 
 public final class AnnotationProcessor extends ClassVisitor {
 
-    private final Map<Class<? extends Annotation>, AnnotationHandler> handlerMap;
+    private final Map<Class<? extends Annotation>, ComponentAnnotationHandler> handlerMap;
 
     public String className;
 
-    public AnnotationProcessor(final Map<Class<? extends Annotation>, AnnotationHandler> handlerMap) {
+    public AnnotationProcessor(final Map<Class<? extends Annotation>, ComponentAnnotationHandler> handlerMap) {
         super(Opcodes.ASM9);
         this.handlerMap = handlerMap;
     }

@@ -1,19 +1,19 @@
 package com.lukeboxwalker.processing;
 
-import com.lukeboxwalker.processing.annotation.Autowired;
-import com.lukeboxwalker.processing.annotation.Service;
+import com.lukeboxwalker.processing.annotation.AutowiredConstructor;
+import com.lukeboxwalker.processing.annotation.PluginComponent;
 import com.lukeboxwalker.processing.exception.ObjectCreationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class ObjectFactoryTest {
+class ComponentFactoryTest {
 
-    private ObjectFactory factory;
+    private ComponentFactory factory;
 
     @BeforeEach
     void setUp() {
-        factory = new ObjectFactoryImpl();
+        factory = new ComponentFactoryImpl();
     }
 
     @Test
@@ -74,12 +74,12 @@ class ObjectFactoryTest {
         });
     }
 
-    @Service
+    @PluginComponent
     private static class Component {
 
     }
 
-    @Service
+    @PluginComponent
     private static class InterfaceComponent implements ExampleInterface {
     }
 
@@ -87,12 +87,12 @@ class ObjectFactoryTest {
 
     }
 
-    @Service
+    @PluginComponent
     private static class NestedComponent {
 
         private final Component component;
 
-        @Autowired
+        @AutowiredConstructor
         public NestedComponent(final Component component) {
             this.component = component;
         }
@@ -102,7 +102,7 @@ class ObjectFactoryTest {
         }
     }
 
-    @Service
+    @PluginComponent
     private static class NoDefaultConstructor {
 
         private final Object object;
@@ -116,26 +116,26 @@ class ObjectFactoryTest {
         }
     }
 
-    @Service
+    @PluginComponent
     private static class CycleComponentOne {
 
-        @Autowired
+        @AutowiredConstructor
         public CycleComponentOne(final CycleComponentTwo cycleComponentTwo) {
         }
     }
 
-    @Service
+    @PluginComponent
     private static class CycleComponentTwo {
 
-        @Autowired
+        @AutowiredConstructor
         public CycleComponentTwo(final CycleComponentOne cycleComponentOne) {
         }
     }
 
-    @Service
+    @PluginComponent
     private static class SelfDependency {
 
-        @Autowired
+        @AutowiredConstructor
         public SelfDependency(final SelfDependency selfDependency) {
         }
     }
