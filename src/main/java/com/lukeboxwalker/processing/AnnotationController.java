@@ -1,5 +1,8 @@
 package com.lukeboxwalker.processing;
 
+import com.lukeboxwalker.plugin.PluginApi;
+import com.lukeboxwalker.processing.annotation.AutoRegisterCommand;
+import com.lukeboxwalker.processing.annotation.AutoRegisterListener;
 import com.lukeboxwalker.processing.annotation.PluginComponent;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -30,13 +33,15 @@ public final class AnnotationController {
 
     public AnnotationController() {
         super();
-        handlerMap.put(PluginComponent.class, new ServiceAnnotationHandler(objectFactory));
     }
 
-    public void process(final Object root) {
-        this.objectFactory.provide(root);
+    public void process(final PluginApi pluginApi) {
+        handlerMap.put(PluginComponent.class, new ServiceAnnotationHandler(objectFactory));
+        handlerMap.put(AutoRegisterListener.class, new AutoRegisterListenerHandler(objectFactory, pluginApi));
+        handlerMap.put(AutoRegisterCommand.class, new AutoRegisterCommandHandler(objectFactory, pluginApi));
         try {
-            this.scanClassPath(root);
+            this.objectFactory.provide(pluginApi);
+            this.scanClassPath(pluginApi);
         } catch (IOException e) {
             e.printStackTrace();
         }
