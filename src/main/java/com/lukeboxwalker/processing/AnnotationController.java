@@ -80,6 +80,7 @@ public final class AnnotationController {
         for (Enumeration<JarEntry> entries = jarFile.entries(); entries.hasMoreElements(); ) {
             JarEntry entry = entries.nextElement();
             if (isClass(entry.getName())) {
+                System.out.println(entry.getName());
                 try (InputStream inputStream = jarFile.getInputStream(entry)) {
                     new ClassReader(inputStream).accept(visitor, PARSING_OPTIONS);
                 }
