@@ -1,6 +1,6 @@
-package example;
+package com.lukeboxwalker.example;
 
-import dependency_injection.AnnotationController;
+import com.lukeboxwalker.processing.AnnotationController;
 
 public class Controller {
 

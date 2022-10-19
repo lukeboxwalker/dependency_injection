@@ -1,4 +1,4 @@
-package dependency_injection;
+package com.lukeboxwalker.processing;
 
 public interface ObjectFactory {
 

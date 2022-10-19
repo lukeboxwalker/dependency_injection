@@ -1,4 +1,9 @@
-package dependency_injection;
+package com.lukeboxwalker.processing;
+
+import com.lukeboxwalker.processing.annotation.Autowired;
+import com.lukeboxwalker.processing.annotation.Service;
+import com.lukeboxwalker.processing.exception.DependencyLookUpException;
+import com.lukeboxwalker.processing.exception.ObjectCreationException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -14,31 +19,30 @@ final class ObjectFactoryImpl implements ObjectFactory {
 
     private static final String UNCHECKED = "unchecked";
 
-    private final Map<Class<?>, Object> singletonBeans = new HashMap<>();
+    private final Map<Class<?>, Object> singletons = new HashMap<>();
 
     /* default */ ObjectFactoryImpl() {
         super();
-        provide(this);
-        singletonBeans.remove(ObjectFactoryImpl.class);
+        addSuperAndInterfaces(ObjectFactoryImpl.class, this);
     }
 
     public void provide(final Object object) {
-        singletonBeans.put(object.getClass(), object);
+        singletons.put(object.getClass(), object);
         addSuperAndInterfaces(object.getClass(), object);
     }
 
     @Override
     public boolean contains(final String className) {
         try {
-            return singletonBeans.containsKey(Class.forName(className));
+            return singletons.containsKey(Class.forName(className));
         } catch (ClassNotFoundException cause) {
-            throw new ObjectCreationException(cause);
+            throw new DependencyLookUpException(cause);
         }
     }
 
     @Override
     public boolean contains(final Class<?> componentClass) {
-        return singletonBeans.containsKey(componentClass);
+        return singletons.containsKey(componentClass);
     }
 
     @Override
@@ -65,13 +69,17 @@ final class ObjectFactoryImpl implements ObjectFactory {
             return (T) get(ObjectFactory.class);
         }
         if (contains(component)) {
-            return (T) singletonBeans.get(component);
+            return (T) singletons.get(component);
+        }
+        return create(original, component, dependencies);
+
+    }
+
+    private <T> T create(final Class<?> original, final Class<T> component, final Set<Class<?>> dependencies) {
+        if (component.isAnnotationPresent(Service.class)) {
+            return createObject(original, component, dependencies);
         } else {
-            if (component.isAnnotationPresent(Service.class)) {
-                return createObject(original, component, dependencies);
-            } else {
-                return createDependency(component);
-            }
+            return createDependency(component);
         }
     }
 
@@ -81,10 +89,10 @@ final class ObjectFactoryImpl implements ObjectFactory {
         final Optional<Constructor<?>> autowiredConstructor = Arrays.stream(component.getDeclaredConstructors())
                 .filter(constructor -> constructor.isAnnotationPresent(Autowired.class))
                 .findFirst();
-        Constructor<?> beanConstructor;
+        Constructor<T> beanConstructor;
         try {
             if (autowiredConstructor.isPresent()) {
-                beanConstructor = autowiredConstructor.get();
+                beanConstructor = (Constructor<T>) autowiredConstructor.get();
             } else {
                 beanConstructor = component.getDeclaredConstructor();
             }
@@ -93,13 +101,13 @@ final class ObjectFactoryImpl implements ObjectFactory {
             final Object[] params = new Object[paramClasses.length];
             for (int i = 0; i < paramClasses.length; i++) {
                 if (dependencies.contains(paramClasses[i])) {
-                    throw new ObjectCreationException("Could not create component with circular dependency: " +
-                            original.getSimpleName() + " ⮀ " + component.getSimpleName());
+                    throw new ObjectCreationException("Could not create component with circular dependency between: " +
+                            original.getSimpleName() + " and " + component.getSimpleName());
                 }
                 params[i] = get(original, paramClasses[i], dependencies);
             }
-            final T object = (T) beanConstructor.newInstance(params);
-            singletonBeans.put(component, object);
+            final T object = beanConstructor.newInstance(params);
+            singletons.put(component, object);
             addSuperAndInterfaces(component, object);
             return object;
         } catch (ReflectiveOperationException cause) {
@@ -110,18 +118,18 @@ final class ObjectFactoryImpl implements ObjectFactory {
     private void addSuperAndInterfaces(final Class<?> componentClass, Object object) {
         final Class<?>[] interfaces = componentClass.getInterfaces();
         for (Class<?> interfaceClass : interfaces) {
-            if (singletonBeans.containsKey(interfaceClass)) {
-                singletonBeans.remove(interfaceClass);
+            if (singletons.containsKey(interfaceClass)) {
+                singletons.remove(interfaceClass);
             } else {
-                singletonBeans.put(interfaceClass, object);
+                singletons.put(interfaceClass, object);
             }
         }
         final Class<?> superClass = componentClass.getSuperclass();
         if (!superClass.equals(Object.class)) {
-            if (singletonBeans.containsKey(superClass)) {
-                singletonBeans.remove(superClass);
+            if (singletons.containsKey(superClass)) {
+                singletons.remove(superClass);
             } else {
-                singletonBeans.put(superClass, object);
+                singletons.put(superClass, object);
             }
             addSuperAndInterfaces(superClass, object);
         }

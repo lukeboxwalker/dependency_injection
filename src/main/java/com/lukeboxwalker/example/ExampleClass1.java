@@ -1,7 +1,7 @@
-package example;
+package com.lukeboxwalker.example;
 
-import dependency_injection.Autowired;
-import dependency_injection.Service;
+import com.lukeboxwalker.processing.annotation.Autowired;
+import com.lukeboxwalker.processing.annotation.Service;
 
 @Service
 public class ExampleClass1 {
