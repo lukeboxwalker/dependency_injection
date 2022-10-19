@@ -28,4 +28,4 @@ jobs:
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v3
       with:
-        path: error.txt
+        path: target/DependencyInjection.jar
