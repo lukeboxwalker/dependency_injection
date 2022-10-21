@@ -84,9 +84,9 @@ public final class AnnotationController {
         final JarFile jarFile = new JarFile(url.getPath());
         for (Enumeration<JarEntry> entries = jarFile.entries(); entries.hasMoreElements(); ) {
             JarEntry entry = entries.nextElement();
+            System.out.println(entry.getName());
             if (isClass(entry.getName())) {
                 try (InputStream inputStream = jarFile.getInputStream(entry)) {
-                    System.out.println(entry.getName());
                     new ClassReader(inputStream).accept(visitor, PARSING_OPTIONS);
                 }
             }
@@ -99,6 +99,7 @@ public final class AnnotationController {
         try {
             scanJarFile(url, processor);
         } catch (Exception e) {
+            e.printStackTrace();
             scanBuildPath(url, processor);
         }
     }
