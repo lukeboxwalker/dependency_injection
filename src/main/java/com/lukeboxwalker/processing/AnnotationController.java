@@ -95,7 +95,7 @@ public final class AnnotationController {
 
     private void scanClassPath(final Object root) throws IOException {
         final URL url = root.getClass().getProtectionDomain().getCodeSource().getLocation();
-        final AnnotationProcessor processor = new AnnotationProcessor(handlerMap);
+        final AnnotationProcessor processor = new AnnotationProcessor(handlerMap, root.getClass().getClassLoader());
         try {
             scanJarFile(url, processor);
         } catch (Exception e) {
