@@ -85,6 +85,7 @@ final class ComponentFactoryImpl implements ComponentFactory {
 
     @SuppressWarnings(UNCHECKED)
     private <T> T createObject(final Class<?> original, final Class<T> component, final Set<Class<?>> dependencies) {
+        System.out.println(component);
         dependencies.add(component);
         final Optional<Constructor<?>> autowiredConstructor = Arrays.stream(component.getDeclaredConstructors())
                 .filter(constructor -> constructor.isAnnotationPresent(AutowiredConstructor.class))
