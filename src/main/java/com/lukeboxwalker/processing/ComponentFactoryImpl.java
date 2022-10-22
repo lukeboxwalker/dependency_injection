@@ -85,7 +85,6 @@ final class ComponentFactoryImpl implements ComponentFactory {
 
     @SuppressWarnings(UNCHECKED)
     private <T> T createObject(final Class<?> original, final Class<T> component, final Set<Class<?>> dependencies) {
-        System.out.println(component);
         dependencies.add(component);
         final Optional<Constructor<?>> autowiredConstructor = Arrays.stream(component.getDeclaredConstructors())
                 .filter(constructor -> constructor.isAnnotationPresent(AutowiredConstructor.class))
@@ -105,7 +104,8 @@ final class ComponentFactoryImpl implements ComponentFactory {
                     throw new ObjectCreationException("Could not create component with circular dependency between: " +
                             original.getSimpleName() + " and " + component.getSimpleName());
                 }
-                params[i] = get(original, paramClasses[i], dependencies);
+                final Set<Class<?>> dependenciesCopy = new HashSet<>(dependencies);
+                params[i] = get(original, paramClasses[i], dependenciesCopy);
             }
             final T object = beanConstructor.newInstance(params);
             singletons.put(component, object);
