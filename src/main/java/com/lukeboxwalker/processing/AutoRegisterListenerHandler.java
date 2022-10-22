@@ -20,11 +20,11 @@ public class AutoRegisterListenerHandler implements ComponentAnnotationHandler {
         if (Arrays.asList(annotatedClass.getInterfaces()).contains(Listener.class)) {
             final Listener listener = (Listener) componentFactory.get(annotatedClass);
             pluginApi.registerListener(listener);
-            System.out.println("Register Listener '" + annotatedClass.getName()
-                    + "' by Plugin '" + pluginApi.getName() + "'");
+//            System.out.println("Register Listener '" + annotatedClass.getName()
+//                    + "' by Plugin '" + pluginApi.getName() + "'");
         } else {
-            System.out.println("Could not register Listener " + annotatedClass.getName()
-                    + ". Interface 'Listener.class' not implemented!");
+//            System.out.println("Could not register Listener " + annotatedClass.getName()
+//                    + ". Interface 'Listener.class' not implemented!");
         }
     }
 }
