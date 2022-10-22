@@ -11,15 +11,12 @@ import java.util.Map;
 public final class AnnotationProcessor extends ClassVisitor {
 
     private final Map<Class<? extends Annotation>, ComponentAnnotationHandler> handlerMap;
-    private final ClassLoader classLoader;
 
     public String className;
 
-    public AnnotationProcessor(final Map<Class<? extends Annotation>, ComponentAnnotationHandler> handlerMap,
-                               final ClassLoader classLoader) {
+    public AnnotationProcessor(final Map<Class<? extends Annotation>, ComponentAnnotationHandler> handlerMap) {
         super(Opcodes.ASM9);
         this.handlerMap = handlerMap;
-        this.classLoader = classLoader;
     }
 
     @Override
@@ -44,11 +41,11 @@ public final class AnnotationProcessor extends ClassVisitor {
     }
 
     private Class<?> loadClassFromDesc(final String desc) throws ClassNotFoundException {
-        final String name = desc.replaceAll("[L;]", "").replace('/', '.');
+        final String name = desc.replace('/', '.').substring(1, desc.length() - 1);
         return loadClassByName(name);
     }
 
     private Class<?> loadClassByName(final String name) throws ClassNotFoundException {
-        return Class.forName(name, true, classLoader);
+        return Class.forName(name);
     }
 }
