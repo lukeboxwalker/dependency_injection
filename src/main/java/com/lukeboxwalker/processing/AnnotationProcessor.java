@@ -41,6 +41,8 @@ public final class AnnotationProcessor extends ClassVisitor {
 
     private Class<?> loadClassFromDesc(final String desc) throws ClassNotFoundException {
         final String name = desc.replaceAll("[L;]", "").replace('/', '.');
+        System.out.println(name);
+        System.out.println(Class.forName(name));
         return Class.forName(name);
     }
 }
